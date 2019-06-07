@@ -3,7 +3,6 @@ from threading import Thread
 import threading
 import json
 
-import pytz
 import time
 import datetime
 
@@ -18,8 +17,7 @@ import util
 
 class BITMEX_ws():
     host="wss://www.bitmex.com/realtime"
-    tz = pytz.timezone('Asia/Shanghai')
-    
+
     def __init__(self, product_lists, pushSocket=None):
         self.pushSocket = pushSocket
         self.product_lists = product_lists
@@ -140,13 +138,13 @@ class BITMEX_ws():
             self.pushSocket.send_string(json.dumps(msg))        
 
     def on_error(self, error):
-        print("### on_error ###",self.tz.fromutc(datetime.datetime.utcnow()))
-        print(error)
+        util.log_error(error)
     
     def on_close(self):
-        print("### closed ###",self.tz.fromutc(datetime.datetime.utcnow()))
+        util.log_info("### closed ###")
 
     def on_open(self):
+        util.log_info("### opened ###")
         sub = {"op": "subscribe", "args": []}
         for symbol in self.product_lists:
             sub["args"].append("orderBookL2_25:%s"%symbol)
